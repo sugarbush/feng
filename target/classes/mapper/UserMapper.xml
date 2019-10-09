@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.UserDao">
+    <resultMap type="User" id="userResultMap" >
+        <id property="uId" column="uId"/>
+        <result property="uName" column="uName"/>
+        <result property="loginName" column="loginName"/>
+        <result property="uPassword" column="uPassword"/>
+        <result property="paperType" column="paperType"/>
+        <result property="paperCode" column="paperCode"/>
+        <result property="uSex" column="uSex"/>
+        <result property="uRemark" column="uRemark"/>
+    </resultMap>
+    <!--通用的SQL查询条件 -->
+    <sql id="query_user_sql_where">
+        <if test="uName != null">
+            AND uName like '%${uName}%'
+        </if>
+        <if test="loginName != null">
+            AND loginName = '#{loginName}'
+        </if>
+        <if test="upassword != null">
+            AND upassword = '#{upassword}'
+        </if>
+    </sql>
+    <!-- 表中所有字段 -->
+    <sql id="all_user_columns">
+        uId,uName,loginName,uPassword,paperType,paperCode,uSex,uRemark
+    </sql>
+
+    <!-- 查询用户和密码进行登录 -->
+    <select id="login" resultType="User" parameterType="String">
+        select
+           <include refid="all_user_columns"></include>
+         from sys_user where loginName = '${loginName}'  AND uPassword = '${upassword}'
+    </select>
+<!--
+    <insert id="addPaper" parameterType="User">
+        INSERT INTO paper(paper_id,name,number,detail) VALUE (#{paperId},#{paperName}, #{paperNum}, #{paperDetail})
+    </insert>
+
+    <delete id="deletePaperById" parameterType="long">
+        DELETE FROM paper WHERE paper_id=#{paperID}
+    </delete>
+
+    <update id="updatePaper" parameterType="User">
+        UPDATE paper
+        SET NAME = #{paperName},NUMBER = #{paperNum},detail = #{paperDetail}
+        WHERE  paper_id = #{paperId}
+    </update>
+
+    <select id="queryById" resultType="User" parameterType="long">
+        SELECT paper_id,name,number,detail
+        FROM paper
+        WHERE paper_id=#{paperId}
+    </select>
+    <select id="queryAllPaper" resultMap="userResultMap">
+        SELECT paper_id,name,number,detail
+        FROM paper
+    </select>
+-->
+</mapper>

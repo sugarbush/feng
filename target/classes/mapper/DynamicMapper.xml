@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.DynamicDao">
+    <resultMap type="Dynamic" id="dynamicResultMap" >
+        <id property="dId" column="dId"/>
+        <result property="title" column="title"/>
+        <result property="subtitle" column="subtitle"/>
+        <result property="titlePicture" column="titlePicture"/>
+        <result property="titleContent" column="titleContent"/>
+        <result property="pubDate" column="pubDate"/>
+        <result property="dType" column="pubDate"/>
+        <result property="dStatus" column="dStatus"/>
+        <result property="createDate" column="createDate"/>
+        <result property="createBy" column="createBy"/>
+        <result property="updateDate" column="updateDate"/>
+        <result property="updateBy" column="updateBy"/>
+        <result property="sremark" column="sremark"/>
+        <result property="titFileName" column="titFileName"/>
+        <result property="titFilePath" column="titFilePath"/>
+        <result property="titFileNameSf" column="titFileNameSf"/>
+    </resultMap>
+    <!-- 表中所有字段 -->
+    <sql id="all_dynamic_columns">
+        dId,title,subtitle,titlePicture,titleContent,pubDate,dType,dStatus,createDate,createBy,updateDate,updateBy,sremark,titFileName,titFilePath,titFileNameSf
+    </sql>
+
+    <!--通用的SQL查询条件 -->
+    <sql id="query_dynamic_sql_where">
+        <if  test="title!=null and title!=''">
+            AND title  LIKE CONCAT(CONCAT('%', #{title}), '%')
+        </if>
+        <if test="subtitle!=null and subtitle!=''">
+            AND subtitle   LIKE CONCAT(CONCAT('%', #{subtitle}), '%')
+        </if>
+        <if test="pubDate!=null and pubDate!=''">
+            AND pubDate = '${pubDate}'
+        </if>
+    </sql>
+
+    <!--根据条件查询公司动态列表信息-->
+    <select id="getDynamicAllList" resultMap="dynamicResultMap">
+        SELECT
+        <include refid="all_dynamic_columns"></include>
+        FROM jr_dynamic
+        <where>
+            <include refid="query_dynamic_sql_where" />
+        </where>
+        ORDER BY COALESCE( updateDate,createDate) DESC
+    </select>
+
+    <!--新增公司动态 -->
+    <insert id="addDynamic" parameterType="Dynamic">
+        INSERT INTO jr_dynamic(title,subtitle,titlePicture,titleContent,pubDate,dType,dStatus,createDate,createBy,updateDate,updateBy,sremark,titFileName,titFilePath,titFileNameSf)
+        VALUE (#{title},#{subtitle}, #{titlePicture}, #{titleContent}, #{pubDate}, #{dType}, #{dStatus},now(), #{createBy},now(), #{updateBy}, #{sremark}, #{titFileName}, #{titFilePath}, #{titFileNameSf})
+    </insert>
+
+    <!-- 根据dId查询公司动态详细信息 -->
+    <select id="getDynamicInfo" parameterType="Dynamic" resultType="Dynamic">
+		select
+		 <include refid="all_dynamic_columns"></include>
+		 from jr_dynamic where dId=#{dId}
+	</select>
+
+    <!-- 根据dId修改公司动态信息 -->
+    <update id="updateDynamic" parameterType="Dynamic">
+		update jr_dynamic set
+        <if test="title != ''">
+            title=#{title},
+        </if>
+        <if test="subtitle != ''">
+            subtitle=#{subtitle},
+        </if>
+        <if test="titleContent != ''">
+            titleContent=#{titleContent},
+        </if>
+        <if test="pubDate != ''">
+            pubDate=#{pubDate},
+        </if>
+        <if test="dType != ''">
+            dType=#{dType},
+        </if>
+        <if test="dStatus != ''">
+            dStatus=#{dStatus},
+        </if>
+        <if test="sremark != ''">
+            sremark=#{sremark},
+        </if>
+        <if test="titFileName != ''">
+           titFileName = #{titFileName},
+        </if>
+        <if test="titFilePath != ''">
+            titFilePath = #{titFilePath},
+        </if>
+        <if test="titFileNameSf != ''">
+            titFileNameSf = #{titFileNameSf},
+        </if>
+        updateDate=now(),
+        updateBy=#{updateBy}
+		 where dId= #{dId}
+	</update>
+
+    <!-- 根据dId删除公司动态信息 -->
+    <delete id="delDynamic" parameterType="Dynamic">
+      delete from jr_dynamic where dId= #{dId}
+    </delete>
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SortSublistDao">
+    <resultMap type="SortSublist" id="sortSublistResultMap" >
+        <id property="sId" column="sId"/>
+        <result property="sortId" column="sortId"/>
+        <result property="sortName" column="sortName"/>
+        <result property="title" column="title"/>
+        <result property="subtitle" column="subtitle"/>
+        <result property="titlePicture" column="titlePicture"/>
+        <result property="titleContent" column="titleContent"/>
+        <result property="tStatus" column="tStatus"/>
+        <result property="pubDate" column="pubDate"/>
+        <result property="createDate" column="createDate"/>
+        <result property="createBy" column="createBy"/>
+        <result property="updateDate" column="updateDate"/>
+        <result property="updateBy" column="updateBy"/>
+        <result property="sremark" column="sremark"/>
+        <result property="titFileName" column="titFileName"/>
+        <result property="titFilePath" column="titFilePath"/>
+        <result property="titFileNameSf" column="titFileNameSf"/>
+    </resultMap>
+    <!-- 表中所有字段 -->
+    <sql id="all_sortSublist_columns">
+        sId,sortId,title,subtitle,titlePicture,titleContent,tStatus,pubDate,createDate,createBy,updateDate,updateBy,sremark,titFileName,titFilePath,titFileNameSf
+    </sql>
+
+    <!--通用的SQL查询条件 -->
+    <sql id="query_sortSublist_sql_where">
+        <if  test="sortId!=null and sortId!=''">
+            AND  o.sortId = '${sortId}'
+        </if>
+        <if  test="title!=null and title!=''">
+            AND o.title  LIKE CONCAT(CONCAT('%', #{title}), '%')
+        </if>
+        <if test="subtitle!=null and subtitle!=''">
+            AND o.subtitle   LIKE CONCAT(CONCAT('%', #{subtitle}), '%')
+        </if>
+        <if test="pubDate!=null and pubDate!=''">
+            AND o.pubDate = '${pubDate}'
+        </if>
+        <if test="tStatus!=null and tStatus!=''">
+            AND tStatus = '${tStatus}'
+        </if>
+    </sql>
+
+    <!--根据条件查询解决方案列表信息-->
+    <select id="getSortSublistAllList" resultMap="sortSublistResultMap">
+        SELECT
+        o.sId,o.sortId,s.sortName,o.title,o.subtitle,o.titlePicture,o.titleContent,o.tStatus,
+        o.pubDate,o.createDate,o.createBy,o.updateDate,o.updateBy,o.sremark,o.titFileName,o.titFilePath,o.titFileNameSf
+        FROM  jr_sort s LEFT JOIN jr_sortSublist o ON o.sortId = s.tId
+        <where>
+            <include refid="query_sortSublist_sql_where" />
+        </where>
+        ORDER BY o.tStatus ,COALESCE(o.updateDate,o.createDate)  DESC
+    </select>
+
+    <!--新增解决方案 -->
+    <insert id="addSortSublist" parameterType="SortSublist">
+        INSERT INTO jr_SortSublist(sortId,title,subtitle,titlePicture,titleContent,tStatus,pubDate,createDate,createBy,updateDate,updateBy,sremark,titFileName,titFilePath,titFileNameSf)
+        VALUE (#{sortId},#{title},#{subtitle}, #{titlePicture}, #{titleContent}, #{tStatus}, #{pubDate},now(), #{createBy},now(), #{updateBy}, #{sremark}, #{titFileName}, #{titFilePath}, #{titFileNameSf})
+    </insert>
+
+    <!-- 根据sid查询解决方案详细信息 -->
+    <select id="getSortSublistInfo" parameterType="SortSublist" resultType="SortSublist">
+		select
+		 <include refid="all_sortSublist_columns"></include>
+		 from jr_sortSublist where sId=#{sId}
+	</select>
+
+    <!-- 根据sid修改解决方案信息 -->
+    <update id="updateSortSublist" parameterType="SortSublist">
+		update jr_sortSublist set
+        <if test="sortId!=null and sortId!=''">
+            sortId=#{sortId},
+        </if>
+        <if test="title!=null and title!=''">
+            title=#{title},
+        </if>
+        <if test="subtitle!=null and subtitle!=''">
+            subtitle=#{subtitle},
+        </if>
+        <if test="titleContent!=null and titleContent!=''">
+            titleContent=#{titleContent},
+        </if>
+        <if test="tStatus!=null and tStatus!=''">
+            tStatus=#{tStatus},
+        </if>
+        <if test="pubDate!=null and pubDate!=''">
+            pubDate=#{pubDate},
+        </if>
+        <if test="sremark!=null and sremark!=''">
+            sremark=#{sremark},
+        </if>
+        <if test="titFileName!=null and titFileName!=''">
+           titFileName = #{titFileName},
+        </if>
+        <if test="titFilePath!=null and titFilePath!=''">
+            titFilePath = #{titFilePath},
+        </if>
+        <if test="titFileNameSf!=null and subtitle!=''">
+            titFileNameSf = #{titFileNameSf},
+        </if>
+        updateDate=now(),
+        updateBy=#{updateBy}
+		 where sId= #{sId}
+	</update>
+
+    <!-- 根据SID删除解决方案信息 -->
+    <delete id="delSortSublist" parameterType="SortSublist">
+      delete from jr_SortSublist where sId= #{sId}
+    </delete>
+</mapper>

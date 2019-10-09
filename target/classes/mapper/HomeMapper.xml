@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.HomeDao">
+    <resultMap type="Home" id="homeResultMap" >
+        <id property="hId" column="hId"/>
+        <result property="title" column="title"/>
+        <result property="subtitle" column="subtitle"/>
+        <result property="titlePicture" column="titlePicture"/>
+        <result property="hurl" column="hurl"/>
+        <result property="hType" column="hType"/>
+        <result property="hStatus" column="hStatus"/>
+        <result property="chineseEnglish" column="chineseEnglish"/>
+        <result property="pubDate" column="pubDate"/>
+        <result property="createDate" column="createDate"/>
+        <result property="createBy" column="createBy"/>
+        <result property="updateDate" column="updateDate"/>
+        <result property="updateBy" column="updateBy"/>
+        <result property="sremark" column="sremark"/>
+        <result property="titFileName" column="titFileName"/>
+        <result property="titFilePath" column="titFilePath"/>
+        <result property="titFileNameSf" column="titFileNameSf"/>
+    </resultMap>
+    <!-- 表中所有字段 -->
+    <sql id="all_home_columns">
+        hId,title,subtitle,titlePicture,hurl,hType,hStatus,chineseEnglish,pubDate,createDate,createBy,updateDate,updateBy,sremark,titFileName,titFilePath,titFileNameSf
+    </sql>
+
+    <!--通用的SQL查询条件 -->
+    <sql id="query_home_sql_where">
+        <if  test="title!=null and title!=''">
+            AND title  LIKE CONCAT(CONCAT('%', #{title}), '%')
+        </if>
+        <if test="subtitle!=null and subtitle!=''">
+            AND subtitle   LIKE CONCAT(CONCAT('%', #{subtitle}), '%')
+        </if>
+        <if test="pubDate!=null and pubDate!=''">
+            AND pubDate = '${pubDate}'
+        </if>
+        <if test="chineseEnglish!=null and chineseEnglish!=''">
+            AND chineseEnglish = '${chineseEnglish}'
+        </if>
+        <if test="hStatus!=null and hStatus!=''">
+            AND hStatus = '${hStatus}'
+        </if>
+        <if test="hType!=null and hType!=''">
+            AND hType = '${hType}'
+        </if>
+    </sql>
+
+    <!--根据条件查询解决方案列表信息-->
+    <select id="getHomeAllList" resultMap="homeResultMap">
+        SELECT
+        <include refid="all_home_columns"></include>
+        FROM jr_home
+        <where>
+            <include refid="query_home_sql_where" />
+        </where>
+        ORDER BY COALESCE( updateDate,createDate) DESC
+    </select>
+
+    <!--新增解决方案 -->
+    <insert id="addHome" parameterType="Home">
+        INSERT INTO jr_home(title,subtitle,titlePicture,hurl,hType,hStatus,chineseEnglish,pubDate,createDate,createBy,updateDate,updateBy,sremark,titFileName,titFilePath,titFileNameSf)
+        VALUE (#{title},#{subtitle}, #{titlePicture}, #{hurl},  #{hType}, #{hStatus}, #{chineseEnglish},#{pubDate},now(), #{createBy},now(), #{updateBy}, #{sremark}, #{titFileName}, #{titFilePath}, #{titFileNameSf})
+    </insert>
+
+    <!-- 根据sid查询解决方案详细信息 -->
+    <select id="getHomeInfo" parameterType="Home" resultType="Home">
+		select
+		 <include refid="all_home_columns"></include>
+		 from jr_home where hId=#{hId}
+	</select>
+
+    <!-- 根据sid修改解决方案信息 -->
+    <update id="updateHome" parameterType="Home">
+		update jr_home set
+        <if test="title!=null and title!=''">
+            title=#{title},
+        </if>
+        <if test="subtitle!=null and subtitle!=''">
+            subtitle=#{subtitle},
+        </if>
+        <if test="titleContent!=null and titleContent!=''">
+            titleContent=#{titleContent},
+        </if>
+        <if test="hurl!=null and hurl!=''">
+            hurl=#{hurl},
+        </if>
+        <if test="hType!=null and hType!=''">
+            hType=#{hType},
+        </if>
+        <if test="hStatus!=null and hStatus!=''">
+            hStatus=#{hStatus},
+        </if>
+        <if test="chineseEnglish!=null and chineseEnglish!=''">
+            chineseEnglish=#{chineseEnglish},
+        </if>
+        <if test="pubDate!=null and pubDate!=''">
+            pubDate=#{pubDate},
+        </if>
+        <if test="sremark!=null and sremark!=''">
+            sremark=#{sremark},
+        </if>
+        <if test="titFileName!=null and titFileName!=''">
+           titFileName = #{titFileName},
+        </if>
+        <if test="titFilePath!=null and titFilePath!=''">
+            titFilePath = #{titFilePath},
+        </if>
+        <if test="titFileNameSf!=null and titFileNameSf!=''">
+            titFileNameSf = #{titFileNameSf},
+        </if>
+        updateDate=now(),
+        updateBy=#{updateBy}
+		 where hId= #{hId}
+	</update>
+
+    <!-- 根据SID删除解决方案信息 -->
+    <delete id="delHome" parameterType="Home">
+      delete from jr_home where hId= #{hId}
+    </delete>
+</mapper>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SortDao">
+    <resultMap type="Sort" id="sortResultMap" >
+        <id property="tId" column="tId"/>
+        <result property="sortName" column="sortName"/>
+        <result property="sortSynopsis" column="sortSynopsis"/>
+        <result property="dStatus" column="dStatus"/>
+        <result property="sOrder" column="sOrder"/>
+        <result property="pubDate" column="pubDate"/>
+        <result property="createDate" column="createDate"/>
+        <result property="createBy" column="createBy"/>
+        <result property="updateDate" column="updateDate"/>
+        <result property="updateBy" column="updateBy"/>
+        <result property="sremark" column="sremark"/>
+    </resultMap>
+    <!-- 表中所有字段 -->
+    <sql id="all_sort_columns">
+        tId,sortName,sortSynopsis,dStatus,sOrder,pubDate,createDate,createBy,updateDate,updateBy,sremark
+    </sql>
+
+    <!--通用的SQL查询条件 -->
+    <sql id="query_sort_sql_where">
+        <if  test="sortName!=null and sortName!=''">
+            AND sortName  LIKE CONCAT(CONCAT('%', #{sortName}), '%')
+        </if>
+        <if test="dStatus!=null and dStatus!=''">
+            AND dStatus = '${dStatus}'
+        </if>
+    </sql>
+
+    <!--根据条件查询分类列表信息-->
+    <select id="getSortAllList" resultMap="sortResultMap">
+        SELECT
+        <include refid="all_sort_columns"></include>
+        FROM jr_sort
+        <where>
+            <include refid="query_sort_sql_where" />
+        </where>
+        ORDER BY sOrder ASC
+    </select>
+
+    <!--新增分类 -->
+    <insert id="addSort" parameterType="Sort">
+        INSERT INTO jr_sort(sortName,sortSynopsis,dStatus,sOrder,pubDate,createDate,createBy,updateDate,updateBy,sremark)
+        VALUE (#{sortName},#{sortSynopsis}, #{dStatus}, #{sOrder}, #{pubDate},now(), #{createBy},now(), #{updateBy}, #{sremark})
+    </insert>
+
+    <!-- 根据sid查询分类详细信息 -->
+    <select id="getSortInfo" parameterType="Sort" resultType="Sort">
+		select
+		 <include refid="all_sort_columns"></include>
+		 from jr_sort where tId=#{tId}
+	</select>
+
+    <!-- 根据sid修改分类信息 -->
+    <update id="updateSort" parameterType="Sort">
+		update jr_sort set
+        <if test="sortName != ''">
+            sortName=#{sortName},
+        </if>
+        <if test="sortSynopsis != ''">
+            sortSynopsis=#{sortSynopsis},
+        </if>
+        <if test="dStatus != ''">
+            dStatus=#{dStatus},
+        </if>
+        <if test="sOrder != ''">
+            sOrder=#{sOrder},
+        </if>
+        <if test="sremark != ''">
+            sremark=#{sremark},
+        </if>
+        <if test="pubDate != ''">
+            pubDate = #{pubDate},
+        </if>
+        updateDate=now(),
+        updateBy=#{updateBy}
+		 where tId= #{tId}
+	</update>
+
+    <!-- 根据TID删除分类信息 -->
+    <delete id="delSort" parameterType="Sort">
+      delete from jr_sort where tId= #{tId}
+    </delete>
+</mapper>

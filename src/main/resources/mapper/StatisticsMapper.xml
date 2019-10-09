@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.StatisticsDao">
+    <resultMap type="Statistics" id="statisticsResultMap" >
+        <id property="sumId" column="sumId"/>
+        <result property="solutionSum" column="solutionSum"/>
+        <result property="dynamicSum" column="dynamicSum"/>
+        <result property="sortSublistSum" column="sortSublistSum"/>
+        <result property="userSum" column="userSum"/>
+    </resultMap>
+    <!--根据条件查询各表总数信息-->
+    <select id="getStatisticsAllList" resultMap="statisticsResultMap">
+
+      SELECT SUM(solutionSum) AS solutionSum ,SUM(dynamicSum) AS dynamicSum,SUM(sortSublistSum) AS sortSublistSum,SUM(userSum) AS userSum
+    FROM
+    (
+    SELECT COUNT(sid)AS solutionSum,''dynamicSum,''sortSublistSum,'' userSum  FROM jr_solution
+    UNION  ALL
+    SELECT '',COUNT(did) dynamicSum,''sortSublistSum,'' userSum  FROM jr_dynamic
+    UNION ALL
+    SELECT '' solutionSum,''dynamicSum,COUNT(sid)sortSublistSum,'' userSum  FROM jr_sortSublist
+    UNION ALL
+    SELECT '' solutionSum,''dynamicSum,''sortSublistSum,COUNT(uId) userSum  FROM sys_user
+    ) jr_statistics
+    </select>
+
+</mapper>
