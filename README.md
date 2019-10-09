@@ -1,8 +1,12 @@
 feng
 采用后台集成分离框架进行项目的开发。
+
 开发工具：IntelliJ IDEA 2019.2.2 x64
+
 框架：SSM（SpringMVC + Spring + MyBatis)
+
 数据库：Mysql
+
 
 本项目已开发了几部分功能的增、删、改、查（分页）和图片上传功能，下载后直接导入到IEDA开发工具，就可以使用。
 
